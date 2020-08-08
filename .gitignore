@@ -39,3 +39,8 @@ nbproject/*
 .vscode
 # Sass preprocessor
 .sass-cache/
+
+# Ignore uploaded files in development
+goods_images/
+# 空フォルダを維持
+.gitkeep
