@@ -13,6 +13,15 @@
         <td><?= $this->Number->format($biditem->id) ?></td>
     </tr>
     <tr>
+        <th scope="row">商品詳細</th>
+        <td><?= h($biditem->goods_detail) ?></td>
+    </tr>
+    <tr>
+        <th scope="row">商品画像</th>
+        <td>
+        <?= $this->Html->image('../goods_images/' . $biditem->goods_image, array('alt' => $biditem->name)); ?></td>
+    </tr>
+    <tr>
         <th scope="row">終了時間</th>
         <td><?= h($biditem->endtime) ?></td>
     </tr>

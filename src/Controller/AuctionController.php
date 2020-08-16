@@ -82,19 +82,46 @@ class AuctionController extends AuctionBaseController {
 
         // Biditemインスタンスを用意
         $biditem = $this->Biditems->newEntity();
+
         // POST送信時の処理
         if($this->request->is('post')) {
-            // $biditemにフォームの送信内容を反映
+
+            // 移動先フォルダを指定
+            $dir = WWW_ROOT . 'goods_images' . DS;
+            // ファイル名を取得
+            $filename = $this->request->getData('goods_image.name');
+            // ファイル名に現在日時を付与
+            $new_filename = date('YmdHis') . $filename;
+            // アップロード絶対パス
+            $uploadfile = $dir . $new_filename;
+            // 一時保存先を入れる
+            $tmp_file = $this->request->getData('goods_image.tmp_name');
+
+            // DB保存用にファイル名を入れる ：： ここがよくない
+            //$this->request = $this->request->withData('goods_image', $new_filename);
+            // $file = $this->request->withData('goods_image', $new_filename);
+            // $this->log($file);
+
+            // biditemにフォームの送信内容を反映
             $biditem = $this->Biditems->patchEntity($biditem, $this->request->getData());
-            // $biditemを保存する
-            if($this->Biditems->save($biditem)) {
-                // 成功時のメッセージ
-                $this->Flash->success(__('保存しました。'));
-                // トップページ(index)に移動
-                return $this->redirect(['action' => 'index']);
+            $this->log($biditem); // 中身チェック
+            // バリデーション
+            if($biditem->errors()) {
+                // 失敗時
+                $this->Flash->error(__('失敗しました。もう一度入力下さい。'));
+            } else {
+                // 成功時
+                if(move_uploaded_file($tmp_file, $uploadfile)) {
+
+                    if($this->Biditems->save($biditem)) {
+                    // 成功時
+                    $this->Flash->success(__('保存しました。'));
+                    // indexへ移動
+                    return $this->redirect(['action' => 'index']);
+                    }
+                }
+                    $this->Flash->error(__('保存に失敗しました。もう一度入力下さい。'));
             }
-            // 失敗時のメッセージ
-            $this->Flash->error(__('保存に失敗しました。もう一度入力下さい。'));
         }
         // 値を補間
         $this->set(compact('biditem'));

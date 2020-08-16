@@ -2,9 +2,9 @@
 namespace App\Model\Table;
 
 use Cake\ORM\Query;
-use Cake\ORM\RulesChecker;
+use Cake\ORM\RulesChecker; // buildRules使う時に必要
 use Cake\ORM\Table;
-use Cake\Validation\Validator;
+use Cake\Validation\Validator; // validationDefault使う時に必要
 
 /**
  * Biditems Model
@@ -70,24 +70,39 @@ class BiditemsTable extends Table
             ->scalar('name')
             ->maxLength('name', 100)
             ->requirePresence('name', 'create')
-            ->notEmptyString('name');
+            ->notEmpty('name', '※商品名を入力して下さい。');
 
-            $validator
+        $validator
             ->scalar('goods_detail')
             ->maxLength('goods_detail', 10000)
             ->requirePresence('goods_detail', 'create')
-            ->notEmptyString('goods_detail');
+            ->notEmpty('goods_detail', '※商品詳細を入力して下さい。');
 
-            $validator
+        $validator
             ->scalar('goods_image')
             ->maxLength('goods_image', 100)
             ->requirePresence('goods_image', 'create')
-            ->notEmptyString('goods_image');
+            ->notEmpty('goods_image', '商品画像を選択して下さい')
+            ->add(
+                'goods_image', ['extension' => [
+                    'rule' => ['extension', ['jpeg', 'jpg', 'png', 'gif']],
+                    'message' => '拡張子がjpg,jpeg,png,gifのみ選択可能です',
+                    'last' => true
+                ],
+                'mimeType' => [
+                    'rule' => ['mimeType', ['image/jpeg', 'image/png', 'image/gif']],
+                    'message' => 'jpeg,png,gif形式のファイルを選択して下さい'
+                ],
+        
+                'maxFileSize' => [
+                    'rule' => ['fileSize', '<=', '10MB'],
+                    'message' => 'ファイルサイズが超過しています（MaxSize:10M）'],
+                ]);
 
         $validator
             ->boolean('finished')
             ->requirePresence('finished', 'create')
-            ->notEmptyString('finished');
+            ->notEmpty('finished');
 
         $validator
             ->dateTime('endtime')
