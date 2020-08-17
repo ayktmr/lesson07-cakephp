@@ -97,14 +97,22 @@ class AuctionController extends AuctionBaseController {
             // 一時保存先を入れる
             $tmp_file = $this->request->getData('goods_image.tmp_name');
 
-            // DB保存用にファイル名を入れる ：： ここがよくない
-            //$this->request = $this->request->withData('goods_image', $new_filename);
-            // $file = $this->request->withData('goods_image', $new_filename);
-            // $this->log($file);
+            // DB保存用にファイル名を入れる
+            $data = array(
+                'user_id' => $this->request->getData('user_id'),
+                'name' => $this->request->getData('name'),
+                'goods_detail' => $this->request->getData('goods_detail'),
+                'goods_image' => $new_filename,
+                'finished' => $this->request->getData('finished'),
+                'endtime' => $this->request->getData('endtime')
+            ); 
+            //  print_r($data);
+            // Log::info(dd($data));
 
             // biditemにフォームの送信内容を反映
-            $biditem = $this->Biditems->patchEntity($biditem, $this->request->getData());
-            $this->log($biditem); // 中身チェック
+            $biditem = $this->Biditems->patchEntity($biditem, $data);
+            $this->log($biditem);
+
             // バリデーション
             if($biditem->errors()) {
                 // 失敗時
