@@ -79,27 +79,6 @@ class BiditemsTable extends Table
             ->notEmpty('goods_detail', '※商品詳細を入力して下さい。');
 
         $validator
-            ->scalar('goods_image')
-            ->maxLength('goods_image', 100)
-            ->requirePresence('goods_image', 'create')
-            ->notEmpty('goods_image', '商品画像を選択して下さい')
-            ->add(
-                'goods_image', ['extension' => [
-                    'rule' => ['extension', ['jpeg', 'jpg', 'png', 'gif']],
-                    'message' => '拡張子がjpg,jpeg,png,gifのみ選択可能です',
-                    'last' => true
-                ],
-                'mimeType' => [
-                    'rule' => ['mimeType', ['image/jpeg', 'image/png', 'image/gif']],
-                    'message' => 'jpeg,png,gif形式のファイルを選択して下さい'
-                ],
-        
-                'maxFileSize' => [
-                    'rule' => ['fileSize', '<=', '10MB'],
-                    'message' => 'ファイルサイズが超過しています（MaxSize:10M）'],
-                ]);
-
-        $validator
             ->boolean('finished')
             ->requirePresence('finished', 'create')
             ->notEmpty('finished');

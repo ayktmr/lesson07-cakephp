@@ -5,6 +5,8 @@ use App\Controller\AppController;
 
 use Cake\Event\Event;
 use Exception;
+use Cake\Filesystem\Folder;
+use Cake\Filesystem\File;
 
 class AuctionController extends AuctionBaseController {
 
@@ -96,6 +98,11 @@ class AuctionController extends AuctionBaseController {
             $uploadfile = $dir . $new_filename;
             // 一時保存先を入れる
             $tmp_file = $this->request->getData('goods_image.tmp_name');
+            // 拡張子を取り出す
+            $ext = substr($filename, strrpos($filename, '.') + 1);
+
+            // 画像ファイル情報を取得
+            $file = new File($tmp_file);
 
             // DB保存用にファイル名を入れる
             $data = array(
@@ -104,31 +111,56 @@ class AuctionController extends AuctionBaseController {
                 'goods_detail' => $this->request->getData('goods_detail'),
                 'goods_image' => $new_filename,
                 'finished' => $this->request->getData('finished'),
-                'endtime' => $this->request->getData('endtime')
+                'endtime' => $this->request->getData('endtime'),
             ); 
-            //  print_r($data);
-            // Log::info(dd($data));
 
             // biditemにフォームの送信内容を反映
             $biditem = $this->Biditems->patchEntity($biditem, $data);
-            $this->log($biditem);
-
             // バリデーション
             if($biditem->errors()) {
                 // 失敗時
                 $this->Flash->error(__('失敗しました。もう一度入力下さい。'));
             } else {
                 // 成功時
-                if(move_uploaded_file($tmp_file, $uploadfile)) {
+                // 画像ファイルが選択されているか確認
+                if(empty($filename)) {
+                    $this->Flash->error(__('画像ファイルを選択してください。'));
+                // 拡張子確認 ----
+                } elseif (
+                    ($ext !== 'jpeg') &&
+                    ($ext !== 'jpg') &&
+                    ($ext !== 'gif') &&
+                    ($ext !== 'png')) {
+                        $this->Flash->error(__('拡張子がjpg,jpeg,png,gifのみ選択可能です'));
+                    
+                    // ファイル名の長さ確認 -----
+                    } elseif (strlen($new_filename) > 100) {
+                        $this->Flash->error(__('ファイル名が長すぎます'));
 
-                    if($this->Biditems->save($biditem)) {
-                    // 成功時
-                    $this->Flash->success(__('保存しました。'));
-                    // indexへ移動
-                    return $this->redirect(['action' => 'index']);
+                    // ファイルサイズ確認 -----
+                    } elseif ($file->size() >= 10000) {
+                        $this->Flash->error(__('ファイルサイズが超過しています（MaxSize:10M）'));
+
+                    // mimetype確認 -----
+                    } elseif(
+                        ($file->mime() !== 'image/jpeg') &&
+                        ($file->mime() !== 'image/gif') &&
+                        ($file->mime() !== 'image/png')) {
+                        $this->Flash->error(__('jpeg,png,gif形式のファイルを選択して下さい'));
+
+                    } else {
+                        // 一時保存ファイルの場所を移動させる
+                        if(move_uploaded_file($tmp_file, $uploadfile)) {
+
+                            if($this->Biditems->save($biditem)) {
+                            // 成功時
+                            $this->Flash->success(__('保存しました。'));
+                            // indexへ移動
+                            return $this->redirect(['action' => 'index']);
+                            }
+                        }
+                        $this->Flash->error(__('保存に失敗しました。もう一度入力下さい。'));
                     }
-                }
-                    $this->Flash->error(__('保存に失敗しました。もう一度入力下さい。'));
             }
         }
         // 値を補間
