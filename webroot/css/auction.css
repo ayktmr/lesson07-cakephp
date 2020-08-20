@@ -25,3 +25,19 @@ table tr th.small {
 nav.sidebar {
     background: #f6f6ff;
 }
+
+
+ /* view.ctp jsカウントダウンタイマー表示の調整   */
+.cdt_txt span {
+    line-height: 1;
+}
+
+.cdt_date {
+    font-size: 1.6rem;
+}
+
+span.cdt_num {
+    background-color: #ffffff;
+    padding: 0 .15em;
+    color: #ff0000;
+}
