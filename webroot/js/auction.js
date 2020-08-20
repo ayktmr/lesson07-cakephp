@@ -42,13 +42,15 @@ function CountdownTimer(elm, tl, mes) {
     var end = new Date(end_date); // 終了日時の指定
     var myE = end.getTime(); // 1970/1/1午前0時から終了日時までのミリ秒
   
-    // 今日が終了日後かの判別
+    // 今日が期間中か終了日後かの判別
     if (myE >= myD) {
       var text = '<span>（ 終了</span><span>まで</span>';
       var tl = end;
+    } else {
+      var text = "";
     } // 終了日後
   
-    var timer = new CountdownTimer('cdt_date', tl, '<small>終了しました</small>'); // 終了日後のテキスト
+    var timer = new CountdownTimer('cdt_date', tl, '<span class="cdt_num">　終了しました！</span>'); // 終了日後のテキスト
     timer.countDown();
     target = document.getElementById("cdt_txt");
     target.innerHTML = text;
