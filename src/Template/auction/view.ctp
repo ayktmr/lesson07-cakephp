@@ -1,3 +1,16 @@
+<?php
+use Cake\I18n\Time;
+
+// jsカウントダウンタイマー用終了日
+$end_date = $biditem->endtime;
+$end_date = $end_date->i18nFormat('yyyy-MM-dd HH:mm:ss');
+?>
+
+<?php echo $this->Html->scriptStart(array('inline' => false )); ?>
+    var end_date = "<?php echo $end_date; ?>";
+<?php echo $this->Html->scriptEnd(); ?>
+<?php echo $this->Html->script('auction'); ?>
+
 <h2>「<?=$biditem->name ?>」の情報</h2>
 <table class="vertical-table">
     <tr>
@@ -23,7 +36,11 @@
     </tr>
     <tr>
         <th scope="row">終了時間</th>
-        <td><?= h($biditem->endtime) ?></td>
+        <td>
+            <?= h($biditem->endtime) ?>
+            <span class="cdt_txt" id="cdt_txt"></span>
+            <span class="cdt_date" id="cdt_date"></span>
+        </td>
     </tr>
     <tr>
         <th scope="row">投稿時間</th>
