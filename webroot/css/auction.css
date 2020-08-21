@@ -26,6 +26,12 @@ nav.sidebar {
     background: #f6f6ff;
 }
 
+/* エラー */
+.error {
+    color: #ff0000;
+    font-size: 140%;
+    font-weight: bold;
+}
 
  /* view.ctp jsカウントダウンタイマー表示の調整   */
 .cdt_txt span {
