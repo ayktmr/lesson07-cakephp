@@ -7,6 +7,7 @@ use Cake\Event\Event;
 use Exception;
 use Cake\Filesystem\Folder;
 use Cake\Filesystem\File;
+use App\Controller\log;
 
 class AuctionController extends AuctionBaseController {
 
@@ -138,8 +139,8 @@ class AuctionController extends AuctionBaseController {
                         $this->Flash->error(__('ファイル名が長すぎます'));
 
                     // ファイルサイズ確認 -----
-                    } elseif ($file->size() >= 10000) {
-                        $this->Flash->error(__('ファイルサイズが超過しています（MaxSize:10M）'));
+                    } elseif ($file->size() >= 1000000) {
+                        $this->Flash->error(__('ファイルサイズが超過しています（MaxSize:1M）'));
 
                     // mimetype確認 -----
                     } elseif(
