@@ -9,7 +9,7 @@ $end_date = $end_date->i18nFormat('yyyy-MM-dd HH:mm:ss');
 <?php echo $this->Html->scriptStart(array('inline' => false )); ?>
     var end_date = "<?php echo $end_date; ?>";
 <?php echo $this->Html->scriptEnd(); ?>
-<?php echo $this->Html->script('auction'); ?>
+<?php echo $this->Html->script(['auction'],['async' => true]); ?>
 
 <h2>「<?=$biditem->name ?>」の情報</h2>
 <table class="vertical-table">
