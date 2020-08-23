@@ -9,6 +9,8 @@ use Cake\Filesystem\Folder;
 use Cake\Filesystem\File;
 use App\Controller\log;
 
+use Cake\I18n\Time;
+
 class AuctionController extends AuctionBaseController {
 
     // デフォルトテーブルを使わない
@@ -114,9 +116,18 @@ class AuctionController extends AuctionBaseController {
                 'finished' => $this->request->getData('finished'),
                 'endtime' => $this->request->getData('endtime'),
             ); 
-
             // biditemにフォームの送信内容を反映
             $biditem = $this->Biditems->patchEntity($biditem, $data);
+
+            // 終了時刻を取得し、タイムスタンプに変換
+            $end_time = $this->request->getData('endtime');
+            $end_time_format = $end_time['year'] . '-' . $end_time['month'] . '-' . $end_time['day'] . ' ' . $end_time['hour'] . ':' . $end_time['minute'] . ':00';
+            $end_time_stamp = strtotime($end_time_format);
+
+            // 現在時刻を取得し、タイムスタンプに変換
+            $now = Time::now();
+            $now_time_stamp = strtotime($now);
+
             // バリデーション
             if($biditem->errors()) {
                 // 失敗時
@@ -149,6 +160,9 @@ class AuctionController extends AuctionBaseController {
                         ($file->mime() !== 'image/png')) {
                         $this->Flash->error(__('jpeg,png,gif形式のファイルを選択して下さい'));
 
+                    // 終了時間確認 -----
+                    } elseif ($end_time_stamp <= $now_time_stamp) {
+                        $this->Flash->error(__('終了時間を指定して下さい'));
                     } else {
                         // 一時保存ファイルの場所を移動させる
                         if(move_uploaded_file($tmp_file, $uploadfile)) {
