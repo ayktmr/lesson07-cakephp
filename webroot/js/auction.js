@@ -18,6 +18,7 @@ function CountdownTimer(elm, tl, mes) {
       var me = this;
   
       if ((this.tl - today) > 0) {
+        timer += '<small>（ 終了まで</small>';
         if(day)timer += '<span class="cdt_num">' + day + '</span><small> 日 </small>';
         if (hour) timer += '<span class="cdt_num">' + hour + '</span><small> 時間 </small>';
         timer += '<span class="cdt_num">' + this.addZero(min) + '</span><small> 分</small><span class="cdt_num">' + this.addZero(sec) + '</span><small>秒 ）</small>';
@@ -43,17 +44,18 @@ function CountdownTimer(elm, tl, mes) {
     var myE = end.getTime(); // 1970/1/1午前0時から終了日時までのミリ秒
   
     // 今日が期間中か終了日後かの判別
-    if (myE >= myD) {
-      var text = '<span>（ 終了</span><span>まで</span>';
+    if ( myE >= myD) {
+      // var text = '<span>（ 終了まで</span>';
       var tl = end;
     } else {
       var text = "";
-    } // 終了日後
-  
+    }
+    // 終了日後
+
     var timer = new CountdownTimer('cdt_date', tl, '<span class="cdt_num">　終了しました！</span>'); // 終了日後のテキスト
     timer.countDown();
-    target = document.getElementById("cdt_txt");
-    target.innerHTML = text;
+    // target = document.getElementById("cdt_txt");
+    // target.innerHTML = text;
   }
   window.onload = function () {
     CDT();
