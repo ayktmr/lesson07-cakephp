@@ -1,14 +1,14 @@
 // ▼ カウントダウンタイマーの設定
 function CountdownTimer(elm, tl, mes) {
     this.initialize.apply(this, arguments);
-    }
+}
 
 CountdownTimer.prototype = {
     initialize: function (elm, tl, mes, resend) {
-    this.elem = document.getElementById(elm);
-    this.tl = tl;
-    this.mes = mes;
-    this.resend = resend;
+        this.elem = document.getElementById(elm);
+        this.tl = tl;
+        this.mes = mes;
+        this.resend = resend;
     },
     countDown: function () {
         var timer = '';
@@ -21,12 +21,12 @@ CountdownTimer.prototype = {
 
         if ((this.tl - today) > 0) {
             timer += '<small>（ 終了まで</small>';
-                if(day)timer += '<span class="cdt_num">' + day + '</span><small> 日 </small>';
-                if (hour) timer += '<span class="cdt_num">' + hour + '</span><small> 時間 </small>';
-                timer += '<span class="cdt_num">' + this.addZero(min) + '</span><small> 分</small><span class="cdt_num">' + this.addZero(sec) + '</span><small>秒 ）</small>';
-                this.elem.innerHTML = timer;
-                tid = setTimeout(function () {
-                    me.countDown();
+            if(day)timer += '<span class="cdt_num">' + day + '</span><small> 日 </small>';
+            if (hour) timer += '<span class="cdt_num">' + hour + '</span><small> 時間 </small>';
+            timer += '<span class="cdt_num">' + this.addZero(min) + '</span><small> 分</small><span class="cdt_num">' + this.addZero(sec) + '</span><small>秒 ）</small>';
+            this.elem.innerHTML = timer;
+            tid = setTimeout(function () {
+                me.countDown();
             }, 10);
         } else if((this.tl - today) <= 0) {
             resend = window.location.href = "/mycakeapp/Auction/view/" + id; 
@@ -34,11 +34,11 @@ CountdownTimer.prototype = {
             return;
         } else {
             this.elem.innerHTML = this.mes;
-        return;
+            return;
         }
     },
     addZero: function (num) {
-    return ('0' + num).slice(-2);
+        return ('0' + num).slice(-2);
     }
 }
 
@@ -50,7 +50,7 @@ function CDT() {
     var myE = end.getTime(); // 1970/1/1午前0時から終了日時までのミリ秒
 
     // 今日が期間中か終了日後かの判別
-    if ( myE >= myD) {
+    if (myE >= myD) {
         var tl = end;
         var resend = "";
     } 
