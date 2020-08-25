@@ -8,6 +8,7 @@ $end_date = $end_date->i18nFormat('yyyy-MM-dd HH:mm:ss');
 
 <?php echo $this->Html->scriptStart(array('inline' => false )); ?>
     var end_date = "<?php echo $end_date; ?>";
+    var id = "<?php echo $this->Number->format($biditem->id); ?>";
 <?php echo $this->Html->scriptEnd(); ?>
 <?php echo $this->Html->script(['auction'],['async' => true]); ?>
 
@@ -55,7 +56,7 @@ $end_date = $end_date->i18nFormat('yyyy-MM-dd HH:mm:ss');
 <div class="related">
     <h4><?= __('落札情報') ?></h4>
 
-    <?php if(!empty($biditem->bidinfo)): ?>
+    <?php if(!empty($biditem->bidinfo->user)): ?>
         <table cellpadding="0" cellspacing="0">
             <tr>
                 <th scope="col">落札者</th>

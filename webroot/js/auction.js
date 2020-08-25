@@ -3,10 +3,11 @@ function CountdownTimer(elm, tl, mes) {
     this.initialize.apply(this, arguments);
   }
   CountdownTimer.prototype = {
-    initialize: function (elm, tl, mes) {
+    initialize: function (elm, tl, mes, resend) {
       this.elem = document.getElementById(elm);
       this.tl = tl;
       this.mes = mes;
+      this.resend = resend;
     },
     countDown: function () {
       var timer = '';
@@ -26,6 +27,10 @@ function CountdownTimer(elm, tl, mes) {
         tid = setTimeout(function () {
           me.countDown();
         }, 10);
+      } else if((this.tl - today) <= 0) {
+        resend = window.location.href = "/mycakeapp/Auction/view/" + id; 
+        this.elem.innerHTML = this.mes;
+        return;
       } else {
         this.elem.innerHTML = this.mes;
         return;
@@ -45,17 +50,13 @@ function CountdownTimer(elm, tl, mes) {
   
     // 今日が期間中か終了日後かの判別
     if ( myE >= myD) {
-      // var text = '<span>（ 終了まで</span>';
       var tl = end;
-    } else {
-      var text = "";
-    }
-    // 終了日後
+      var resend = "";
+    } 
 
-    var timer = new CountdownTimer('cdt_date', tl, '<span class="cdt_num">　終了しました！</span>'); // 終了日後のテキスト
+    // 終了日後
+    var timer = new CountdownTimer('cdt_date', tl, '<span class="cdt_num">　終了しました！</span>', resend); // 終了日後のテキスト
     timer.countDown();
-    // target = document.getElementById("cdt_txt");
-    // target.innerHTML = text;
   }
   window.onload = function () {
     CDT();
