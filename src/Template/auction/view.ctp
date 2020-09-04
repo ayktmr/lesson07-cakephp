@@ -1,3 +1,17 @@
+<?php
+use Cake\I18n\Time;
+
+// jsカウントダウンタイマー用終了日
+$end_date = $biditem->endtime;
+$end_date = $end_date->i18nFormat('yyyy-MM-dd HH:mm:ss');
+?>
+
+<?php echo $this->Html->scriptStart(array('inline' => false )); ?>
+    var end_date = "<?php echo $end_date; ?>";
+    var id = "<?php echo $this->Number->format($biditem->id); ?>";
+<?php echo $this->Html->scriptEnd(); ?>
+<?php echo $this->Html->script(['auction'],['async' => true]); ?>
+
 <h2>「<?=$biditem->name ?>」の情報</h2>
 <table class="vertical-table">
     <tr>
@@ -13,8 +27,21 @@
         <td><?= $this->Number->format($biditem->id) ?></td>
     </tr>
     <tr>
+        <th scope="row">商品詳細</th>
+        <td><?= h($biditem->goods_detail) ?></td>
+    </tr>
+    <tr>
+        <th scope="row">商品画像</th>
+        <td>
+        <?= $this->Html->image('../goods_images/' . $biditem->goods_image, array('alt' => $biditem->name)); ?></td>
+    </tr>
+    <tr>
         <th scope="row">終了時間</th>
-        <td><?= h($biditem->endtime) ?></td>
+        <td>
+            <?= h($biditem->endtime) ?>
+            <span class="cdt_txt" id="cdt_txt"></span>
+            <span class="cdt_date" id="cdt_date"></span>
+        </td>
     </tr>
     <tr>
         <th scope="row">投稿時間</th>
@@ -29,7 +56,7 @@
 <div class="related">
     <h4><?= __('落札情報') ?></h4>
 
-    <?php if(!empty($biditem->bidinfo)): ?>
+    <?php if(!empty($biditem->bidinfo->user)): ?>
         <table cellpadding="0" cellspacing="0">
             <tr>
                 <th scope="col">落札者</th>

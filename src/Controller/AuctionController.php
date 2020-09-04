@@ -5,6 +5,11 @@ use App\Controller\AppController;
 
 use Cake\Event\Event;
 use Exception;
+use Cake\Filesystem\Folder;
+use Cake\Filesystem\File;
+use App\Controller\log;
+
+use Cake\I18n\Time;
 
 class AuctionController extends AuctionBaseController {
 
@@ -82,19 +87,96 @@ class AuctionController extends AuctionBaseController {
 
         // Biditemインスタンスを用意
         $biditem = $this->Biditems->newEntity();
+
         // POST送信時の処理
         if($this->request->is('post')) {
-            // $biditemにフォームの送信内容を反映
-            $biditem = $this->Biditems->patchEntity($biditem, $this->request->getData());
-            // $biditemを保存する
-            if($this->Biditems->save($biditem)) {
-                // 成功時のメッセージ
-                $this->Flash->success(__('保存しました。'));
-                // トップページ(index)に移動
-                return $this->redirect(['action' => 'index']);
+
+            // 移動先フォルダを指定
+            $dir = WWW_ROOT . 'goods_images' . DS;
+            // ファイル名を取得
+            $filename = $this->request->getData('goods_image.name');
+            // ファイル名に現在日時を付与
+            $new_filename = date('YmdHis') . $filename;
+            // アップロード絶対パス
+            $uploadfile = $dir . $new_filename;
+            // 一時保存先を入れる
+            $tmp_file = $this->request->getData('goods_image.tmp_name');
+            // 拡張子を取り出す
+            $ext = substr($filename, strrpos($filename, '.') + 1);
+
+            // 画像ファイル情報を取得
+            $file = new File($tmp_file);
+
+            // DB保存用にファイル名を入れる
+            $data = array(
+                'user_id' => $this->request->getData('user_id'),
+                'name' => $this->request->getData('name'),
+                'goods_detail' => $this->request->getData('goods_detail'),
+                'goods_image' => $new_filename,
+                'finished' => $this->request->getData('finished'),
+                'endtime' => $this->request->getData('endtime'),
+            ); 
+            // biditemにフォームの送信内容を反映
+            $biditem = $this->Biditems->patchEntity($biditem, $data);
+
+            // 終了時刻を取得し、タイムスタンプに変換
+            $end_time = $this->request->getData('endtime');
+            $end_time_format = $end_time['year'] . '-' . $end_time['month'] . '-' . $end_time['day'] . ' ' . $end_time['hour'] . ':' . $end_time['minute'] . ':00';
+            $end_time_stamp = strtotime($end_time_format);
+
+            // 現在時刻を取得し、タイムスタンプに変換
+            $now = Time::now();
+            $now_time_stamp = strtotime($now);
+
+            // バリデーション
+            if($biditem->errors()) {
+                // 失敗時
+                $this->Flash->error(__('失敗しました。もう一度入力下さい。'));
+            } else {
+                // 成功時
+                // 画像ファイルが選択されているか確認
+                if(empty($filename)) {
+                    $this->Flash->error(__('画像ファイルを選択してください。'));
+                // 拡張子確認 ----
+                } elseif (
+                    ($ext !== 'jpeg') &&
+                    ($ext !== 'jpg') &&
+                    ($ext !== 'gif') &&
+                    ($ext !== 'png')) {
+                        $this->Flash->error(__('拡張子がjpg,jpeg,png,gifのみ選択可能です'));
+                    
+                    // ファイル名の長さ確認 -----
+                    } elseif (strlen($new_filename) > 100) {
+                        $this->Flash->error(__('ファイル名が長すぎます'));
+
+                    // ファイルサイズ確認 -----
+                    } elseif ($file->size() >= 1000000) {
+                        $this->Flash->error(__('ファイルサイズが超過しています（MaxSize:1M）'));
+
+                    // mimetype確認 -----
+                    } elseif(
+                        ($file->mime() !== 'image/jpeg') &&
+                        ($file->mime() !== 'image/gif') &&
+                        ($file->mime() !== 'image/png')) {
+                        $this->Flash->error(__('jpeg,png,gif形式のファイルを選択して下さい'));
+
+                    // 終了時間確認 -----
+                    } elseif ($end_time_stamp <= $now_time_stamp) {
+                        $this->Flash->error(__('終了時間を指定して下さい'));
+                    } else {
+                        // 一時保存ファイルの場所を移動させる
+                        if(move_uploaded_file($tmp_file, $uploadfile)) {
+
+                            if($this->Biditems->save($biditem)) {
+                            // 成功時
+                            $this->Flash->success(__('保存しました。'));
+                            // indexへ移動
+                            return $this->redirect(['action' => 'index']);
+                            }
+                        }
+                        $this->Flash->error(__('保存に失敗しました。もう一度入力下さい。'));
+                    }
             }
-            // 失敗時のメッセージ
-            $this->Flash->error(__('保存に失敗しました。もう一度入力下さい。'));
         }
         // 値を補間
         $this->set(compact('biditem'));

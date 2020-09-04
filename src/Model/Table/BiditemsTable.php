@@ -2,9 +2,9 @@
 namespace App\Model\Table;
 
 use Cake\ORM\Query;
-use Cake\ORM\RulesChecker;
+use Cake\ORM\RulesChecker; // buildRules使う時に必要
 use Cake\ORM\Table;
-use Cake\Validation\Validator;
+use Cake\Validation\Validator; // validationDefault使う時に必要
 
 /**
  * Biditems Model
@@ -70,12 +70,18 @@ class BiditemsTable extends Table
             ->scalar('name')
             ->maxLength('name', 100)
             ->requirePresence('name', 'create')
-            ->notEmptyString('name');
+            ->notEmpty('name', '※商品名を入力して下さい。');
+
+        $validator
+            ->scalar('goods_detail')
+            ->maxLength('goods_detail', 10000)
+            ->requirePresence('goods_detail', 'create')
+            ->notEmpty('goods_detail', '※商品詳細を入力して下さい。');
 
         $validator
             ->boolean('finished')
             ->requirePresence('finished', 'create')
-            ->notEmptyString('finished');
+            ->notEmpty('finished');
 
         $validator
             ->dateTime('endtime')
